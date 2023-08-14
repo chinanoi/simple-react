@@ -1,5 +1,21 @@
 import { REACT_ELEMENT } from './utils';
 
+function setPropsForDom(dom, VNodeProps = {}) {
+  if (!dom) return;
+  for (let key in VNodeProps) {
+    if (key === 'children') continue;
+    if (/^on[A-Z].*/.test()) {
+      // onXxx事件
+    } else if (key === 'style') {
+      Object.keys(VNodeProps[key]).forEach((styleName) => {
+        dom.style[styleName] = VNodeProps[key][styleName];
+      });
+    } else {
+      dom[key] = VNodeProps[key];
+    }
+  }
+}
+
 function createDOM(VNode) {
   // 创建元素  处理子元素   处理属性值
   const { type, props, $$typeof } = VNode;
@@ -22,6 +38,7 @@ function createDOM(VNode) {
       dom.appendChild(document.createTextNode(props.children));
     }
   }
+  setPropsForDom(dom, props);
   return dom;
 }
 
@@ -46,6 +63,7 @@ function render(VNode, containerDOM) {
   // 将得到的真实DOM挂载到containerDOM中
   mount(VNode, containerDOM);
 }
+
 
 const ReactDOM = {
   render
