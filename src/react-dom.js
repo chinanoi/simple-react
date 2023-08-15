@@ -15,12 +15,21 @@ function setPropsForDom(dom, VNodeProps = {}) {
     }
   }
 }
+function getDomByFunctionComponent(VNode) {
+  let { type, props } = VNode;
+  let renderVNode = type(props);
+  if (!renderVNode) return null;
+  return createDOM(renderVNode);
+}
 
 function createDOM(VNode) {
   // 创建元素  处理子元素   处理属性值
   const { type, props, $$typeof } = VNode;
   let dom;
-  if (type && $$typeof === REACT_ELEMENT) {
+  if (typeof type === 'function' && $$typeof === REACT_ELEMENT) {
+    console.log(VNode);
+    return getDomByFunctionComponent(VNode);
+  } else if (type && $$typeof === REACT_ELEMENT) {
     console.log(type);
     dom = document.createElement(type);
   }
