@@ -22,11 +22,26 @@ function getDomByFunctionComponent(VNode) {
   return createDOM(renderVNode);
 }
 
+function getDomByClassComponent(VNode) {
+  let { type, props } = VNode;
+  let instance = new type(props);
+  let renderVNode = instance.render();
+  if (!renderVNode) return null;
+  return createDOM(renderVNode);
+}
+
 function createDOM(VNode) {
   // 创建元素  处理子元素   处理属性值
   const { type, props, $$typeof } = VNode;
   let dom;
-  if (typeof type === 'function' && $$typeof === REACT_ELEMENT) {
+  if (
+    typeof type === 'function' &&
+    type.IS_CLASS_COMPONENT &&
+    $$typeof === REACT_ELEMENT
+  ) {
+    console.log(VNode);
+    return getDomByClassComponent(VNode);
+  } else if (typeof type === 'function' && $$typeof === REACT_ELEMENT) {
     console.log(VNode);
     return getDomByFunctionComponent(VNode);
   } else if (type && $$typeof === REACT_ELEMENT) {
