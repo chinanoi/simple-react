@@ -26,8 +26,23 @@ function getDomByClassComponent(VNode) {
   let { type, props } = VNode;
   let instance = new type(props);
   let renderVNode = instance.render();
+  instance.oldVNode = renderVNode;
+  setTimeout(() => {
+    instance.setState({ test: '88888' });
+  }, 3000);
   if (!renderVNode) return null;
   return createDOM(renderVNode);
+}
+
+export function findDomByVNode(VNode) {
+  if (!VNode) return;
+  if (VNode.dom) return VNode.dom;
+}
+
+export function updateDomTree(oldDom, newVNode) {
+  let parentNode = oldDom.parentNode;
+  parentNode.removeChild(oldDom);
+  parentNode.appendChild(createDOM(newVNode));
 }
 
 function createDOM(VNode) {
@@ -63,6 +78,7 @@ function createDOM(VNode) {
     }
   }
   setPropsForDom(dom, props);
+  VNode.dom = dom;
   return dom;
 }
 

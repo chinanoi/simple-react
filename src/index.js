@@ -4,10 +4,14 @@ import React from './react';
 import ReactDOM from './react-dom';
 
 class MyClassComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { test: '9999' };
+  }
   render() {
     return (
       <div className='test-class' style={{ color: 'red' }}>
-        Simple React App<span>{this.props.xx}</span>
+        Simple React App<span>{this.state.test}</span>
         <span>xx2</span>
       </div>
     );
