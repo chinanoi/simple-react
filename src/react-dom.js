@@ -1,11 +1,13 @@
 import { REACT_ELEMENT } from './utils';
+import { addEvent } from './event';
 
 function setPropsForDom(dom, VNodeProps = {}) {
+  console.log(VNodeProps);
   if (!dom) return;
   for (let key in VNodeProps) {
     if (key === 'children') continue;
-    if (/^on[A-Z].*/.test()) {
-      // onXxx事件
+    if (/^on[A-Z].*/.test(key)) {
+      addEvent(dom, key.toLowerCase(), VNodeProps[key]);
     } else if (key === 'style') {
       Object.keys(VNodeProps[key]).forEach((styleName) => {
         dom.style[styleName] = VNodeProps[key][styleName];
@@ -27,9 +29,6 @@ function getDomByClassComponent(VNode) {
   let instance = new type(props);
   let renderVNode = instance.render();
   instance.oldVNode = renderVNode;
-  setTimeout(() => {
-    instance.setState({ test: '88888' });
-  }, 3000);
   if (!renderVNode) return null;
   return createDOM(renderVNode);
 }
