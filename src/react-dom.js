@@ -25,8 +25,9 @@ function getDomByFunctionComponent(VNode) {
 }
 
 function getDomByClassComponent(VNode) {
-  let { type, props } = VNode;
+  let { type, props, ref } = VNode;
   let instance = new type(props);
+  ref && (ref.current = instance);
   let renderVNode = instance.render();
   instance.oldVNode = renderVNode;
   if (!renderVNode) return null;
@@ -46,7 +47,7 @@ export function updateDomTree(oldDom, newVNode) {
 
 function createDOM(VNode) {
   // 创建元素  处理子元素   处理属性值
-  const { type, props, $$typeof } = VNode;
+  const { type, props, $$typeof, ref } = VNode;
   let dom;
   if (
     typeof type === 'function' &&
@@ -78,6 +79,7 @@ function createDOM(VNode) {
   }
   setPropsForDom(dom, props);
   VNode.dom = dom;
+  ref && (ref.current = dom);
   return dom;
 }
 
