@@ -84,7 +84,6 @@ class MyClassComponent extends React.Component {
         >
           Simple React Counter: {this.state.count}
         </div>
-        <CustomTextInput />
       </>
     );
   }

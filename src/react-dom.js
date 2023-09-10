@@ -1,4 +1,4 @@
-import { REACT_ELEMENT } from './utils';
+import { REACT_ELEMENT, REACT_FORWARD_REF } from './utils';
 import { addEvent } from './event';
 
 function setPropsForDom(dom, VNodeProps = {}) {
@@ -34,6 +34,13 @@ function getDomByClassComponent(VNode) {
   return createDOM(renderVNode);
 }
 
+function getDomByForwardRefFunction(vNode) {
+  let { type, props, ref } = vNode;
+  let renderVdom = type.render(props, ref);
+  if (!renderVdom) return null;
+  return createDOM(renderVdom);
+}
+
 export function findDomByVNode(VNode) {
   if (!VNode) return;
   if (VNode.dom) return VNode.dom;
@@ -49,18 +56,21 @@ function createDOM(VNode) {
   // 创建元素  处理子元素   处理属性值
   const { type, props, $$typeof, ref } = VNode;
   let dom;
+  if (type && type.$$typeof === REACT_FORWARD_REF) {
+    return getDomByForwardRefFunction(VNode);
+  }
   if (
     typeof type === 'function' &&
     type.IS_CLASS_COMPONENT &&
     $$typeof === REACT_ELEMENT
   ) {
-    console.log(VNode);
     return getDomByClassComponent(VNode);
-  } else if (typeof type === 'function' && $$typeof === REACT_ELEMENT) {
+  }
+  if (typeof type === 'function' && $$typeof === REACT_ELEMENT) {
     console.log(VNode);
     return getDomByFunctionComponent(VNode);
-  } else if (type && $$typeof === REACT_ELEMENT) {
-    console.log(type);
+  }
+  if (type && $$typeof === REACT_ELEMENT) {
     dom = document.createElement(type);
   }
   // 处理子元素，如果子元素为数组，为对象，为字符串，分别处理
@@ -104,7 +114,6 @@ function render(VNode, containerDOM) {
   // 将得到的真实DOM挂载到containerDOM中
   mount(VNode, containerDOM);
 }
-
 
 const ReactDOM = {
   render
